@@ -1,4 +1,7 @@
-﻿0.3
+﻿0.4
+ - cleanup of code
+ - new icon
+0.3
  - adding google-cloud-print
 0.2
  - various fixes trying to get it working.
