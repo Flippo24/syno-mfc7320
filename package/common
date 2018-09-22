@@ -1,0 +1,68 @@
+#!/bin/sh
+
+LOGDIR="/var/packages/mfc7320/target"
+
+# write an info entry to out log file
+#   $1 - log entry
+logInfo() {
+	/bin/echo "`date +%Y-%m-%d` `date +%H:%M:%S`: $1<br/>" >> $LOGDIR/log
+}
+
+# write an error entry to out log file
+#   $1 - log entry
+logError() {
+	/bin/echo "`date +%Y-%m-%d` `date +%H:%M:%S`: <span style=\"color:red;\">$1</span><br/>" >> $LOGDIR/log
+}
+
+# set the led or send a beep
+#   $1 - event (see http://www.synology-wiki.de/index.php/LEDs_und_Buttons)
+beep() {
+	/bin/echo $1 > /dev/ttyS1
+}
+
+beepError() {
+        beep 3
+        /bin/sleep 1s
+	beep 3
+        /bin/sleep 1s
+	beep 3
+        /bin/sleep 1s
+}
+
+notifyBegin() {
+	# import our config
+	source /var/packages/mfc7320/target/config
+
+	if [ $BEEP = "1" ]
+	then
+		beep 2
+	fi
+	if [ $LED = "1" ]
+	then
+		beep :
+	fi
+}
+notifyEnd() {
+	# import our config
+	source /var/packages/mfc7320/target/config
+
+	if [ $BEEP = "1" ]
+	then
+		beep 2
+	fi
+	if [ $LED = "1" ]
+	then
+		beep 8
+	fi
+        if [ $NOTIFY = "1" ]
+        then
+		message="MFC-7320: Something completed but I do not know what..."
+		if [ $1 = "add" ]; then 
+			message="mfc-7320 connected properly."
+		fi
+		if [ $1 = "remove" ]; then 
+			message="mfc-7320 disconnected properly."
+		fi
+		/usr/syno/bin/synodsmnotify $NOTIFYTARGET "Scanner" "$message"
+        fi
+}

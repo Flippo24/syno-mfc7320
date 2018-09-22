@@ -1,0 +1,60 @@
+#!/bin/sh
+
+## Make sure only one instance of this script is running at any point in time
+LOCKFILE=/var/packages/mfc7320/target/lock
+if [ -e ${LOCKFILE} ] && kill -0 `cat ${LOCKFILE}`; then
+    echo "Script already running ($(basename $0))... Waiting up to 2 minutes for it to complete..."
+    timeout 2m tail --pid=`cat ${LOCKFILE}` -f /dev/null
+    if [ -e ${LOCKFILE} ] && kill -0 `cat ${LOCKFILE}`; then
+        echo "Script is still running after 2 minutes... Something might be wrong... Exiting."
+        exit 1
+    fi
+fi
+# Make sure the lockfile is removed when we exit and then claim it
+trap "rm -f ${LOCKFILE}; exit" INT TERM EXIT
+echo $$ > ${LOCKFILE}
+
+
+source /var/packages/mfc7320/target/common
+
+if [ -z "$1" ]
+then
+	echo "mfc7320: incorrect '\$1' - aborting ..."
+	exit 1
+fi
+
+# import our config
+source /var/packages/mfc7320/target/config
+
+action=$1
+device=$2
+devname=$3
+logInfo "AUTORUN: $action SCANNER on $device ($devname)"
+
+if [ $devname == "lp0" ]; then
+	# do nothing and exit here, we'll get a new notification when the proper device gets connected. This is an alias.
+	logInfo "AUTORUN: Ignoring device $device ($action)"
+	exit 0
+fi;
+
+if [ $action = "add" ]; then
+	logInfo "AUTORUN: starting docker container ..."
+	notifyBegin
+	docker run -d --device /dev/usb/lp0 --device $device -p $PORT:8080 -v $SCANSFOLDER:/var/www/scanservjs/data/output --env-file /var/packages/mfc7320/target/envfile --name scanner_mfc7320 toxic0berliner/docker-brother-mfc7320
+	logInfo "AUTORUN: docker container is now running."
+	logInfo "AUTORUN: $action $device COMPLETED."
+	notifyEnd "add" 
+	exit 0
+fi
+
+if [ $action = "remove" ]; then
+	logInfo "AUTORUN: stopping docker container ..."
+	notifyBegin
+	docker stop scanner_mfc7320
+	logInfo "AUTORUN: removing docker container ..."
+	docker rm scanner_mfc7320
+	logInfo "AUTORUN: docker has been removed." 
+	logInfo "AUTORUN: $action $device COMPLETED."
+	notifyEnd "remove" 
+	exit 0
+fi

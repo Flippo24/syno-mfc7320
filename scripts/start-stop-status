@@ -1,0 +1,54 @@
+#!/bin/sh
+
+case $1 in
+	start)
+		if [ -f /usr/lib/udev/rules.d/99-mfc7320.rules ]
+		then
+			exit 1
+		else
+			cp /var/packages/mfc7320/target/rules /usr/lib/udev/rules.d/99-mfc7320.rules
+			chmod 400 /usr/lib/udev/rules.d/99-mfc7320.rules
+			/usr/bin/udevadm control --reload-rules
+		fi
+                echo "`date +%Y-%m-%d` `date +%H:%M:%S`:START-STOP-STATUS: mfc7320 activated<br/>" >> /var/packages/mfc7320/target/log
+	
+		# Trying to find the scanner and start the service if found
+		scanner=$(ls -al /dev/bus/usb/*/* |grep lp |sed 's/.* //')
+		if [ -n "$scanner" ]; then
+			echo "`date +%Y-%m-%d` `date +%H:%M:%S`:START-STOP-STATUS: scanner already exists when activationg. Trying to start service for $scanner <br/>" >> /var/packages/mfc7320/target/log
+			/var/packages/mfc7320/target/autorun add $scanner startstopstatus
+		fi
+		exit 0
+	;;
+	stop)
+		# Trying to find the scanner and stop the service if found
+		scanner=$(ls -al /dev/bus/usb/*/* |grep lp |sed 's/.* //')
+		if [ -n "$scanner" ]; then
+			echo "`date +%Y-%m-%d` `date +%H:%M:%S`:START-STOP-STATUS: deactivating syno-application. Trying to remove service for $scanner <br/>" >> /var/packages/mfc7320/target/log
+			/var/packages/mfc7320/target/autorun remove $scanner startstopstatus
+		fi
+		if [ -f /usr/lib/udev/rules.d/99-mfc7320.rules ]
+		then
+			rm -f /usr/lib/udev/rules.d/99-mfc7320.rules
+			/usr/bin/udevadm control --reload-rules
+		fi
+
+		echo "`date +%Y-%m-%d` `date +%H:%M:%S`:START-STOP-STATUS: mfc7320 deactivated<br/>" >> /var/packages/mfc7320/target/log
+		exit 0
+	;;
+	status)
+		if [ -f /usr/lib/udev/rules.d/99-mfc7320.rules ]
+		then 
+			exit 0
+		else
+			exit 1
+		fi
+	;;
+	log)
+		if [ -e /var/packages/mfc7320/target/log ]
+		then
+			echo /var/packages/mfc7320/target/log
+		fi
+		exit 0
+	;;
+esac

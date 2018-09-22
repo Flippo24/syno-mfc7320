@@ -1,0 +1,7 @@
+﻿0.3
+ - adding google-cloud-print
+0.2
+ - various fixes trying to get it working.
+ - still need to get around to google-cloud-print...
+0.1
+ - intial test, based on autorun by Jan Reidemeister.

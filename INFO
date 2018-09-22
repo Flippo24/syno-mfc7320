@@ -1,0 +1,7 @@
+package="mfc7320"
+version="0.3"
+maintainer="toxic0berliner"
+description="ScanServer for Brother MFC-7320 plus google-cloud-print server"
+arch="noarch"
+firmware="6.0-7321"
+helpurl="https://www.github.com/toxic0berliner/"

@@ -1,0 +1,3 @@
+ACTION=="remove", ENV{ID_VENDOR}=="04f9", ENV{ID_MODEL_ID}=="01eb", RUN+="/var/packages/mfc7320/target/udev remove %k"
+ACTION=="add", ENV{ID_VENDOR}=="04f9", ENV{ID_MODEL_ID}=="01eb", GROUP="lp", RUN+="/var/packages/mfc7320/target/udev add %k"
+

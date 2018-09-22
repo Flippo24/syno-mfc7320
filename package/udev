@@ -1,0 +1,15 @@
+#!/bin/sh
+
+source /var/packages/mfc7320/target/common
+
+TMPPATH="/tmp/net.toxicpublic.mfc7320.$2.$1"
+
+# log manually here 
+/bin/echo "`date +%Y-%m-%d` `date +%H:%M:%S`: UDEV: $1 device '$2' at $DEVNAME - event received from udev <span style=\"color:gray; font-size:50%;\">" >> /var/packages/mfc7320/target/log
+#env >> /var/packages/mfc7320/target/log
+/bin/echo "</span>" >> /var/packages/mfc7320/target/log
+
+# run mfc7320
+/var/packages/mfc7320/target/autorun $1 $DEVNAME $2 &
+
+exit

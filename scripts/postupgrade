@@ -1,0 +1,29 @@
+#!/bin/sh
+
+if [ -d "/tmp/net.toxic0berliner.mfc7320" ]
+then
+    # restore config
+    if [ -f "/tmp/net.toxic0berliner.mfc7320/config" ]
+    then
+        cp /tmp/net.toxic0berliner.mfc7320/config /var/packages/mfc7320/target/
+    fi
+
+    # restore log
+    if [ -f "/tmp/net.toxic0berliner.mfc7320/log" ]
+    then
+        cp /tmp/net.toxic0berliner.mfc7320/log /var/packages/mfc7320/target/
+    fi
+
+    # restore envfile
+    if [ -f "/tmp/net.toxic0berliner.mfc7320/log" ]
+    then
+        cp /tmp/net.toxic0berliner.mfc7320/envfile /var/packages/mfc7320/target/
+    fi
+
+    echo "`date +%Y-%m-%d` `date +%H:%M:%S`: mfc7320 upgraded<br/>" >> "/var/packages/mfc7320/target/log"
+fi
+
+# clean-up
+rm -r /tmp/net.toxic0berliner.mfc7320
+
+exit 0

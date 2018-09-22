@@ -1,0 +1,21 @@
+#!/bin/sh
+
+#clean-up temp when required
+if [ -d "/tmp/net.toxic0berliner.mfc7320" ]
+then
+    rm -r /tmp/net.toxic0berliner.mfc7320
+fi
+
+# create temp
+mkdir /tmp/net.toxic0berliner.mfc7320
+
+# save config
+cp /var/packages/mfc7320/target/config /tmp/net.toxic0berliner.mfc7320/
+
+# save log
+cp /var/packages/mfc7320/target/log /tmp/net.toxic0berliner.mfc7320/
+
+# save envfile 
+cp /var/packages/mfc7320/target/envfile /tmp/net.toxic0berliner.mfc7320/
+
+exit 0
